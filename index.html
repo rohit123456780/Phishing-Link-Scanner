@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Link Checker - Cyber Security Tool</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Phishing Link Checker</h1>
+        <p class="description">Analyze any link to see if it's safe or potentially a phishing attempt.</p>
+        
+        <form id="url-form">
+            <input type="text" id="url-input" name="url" placeholder="Enter URL here" required>
+            <button type="submit">Check URL</button>
+        </form>
+
+        <div id="result" class="hidden">
+            <h2>Scan Result:</h2>
+            <p id="status" class="status"></p>
+            <ul id="reasons"></ul>
+        </div>
+    </div>
+
+    <script>
+        $("#url-form").submit(function(e) {
+            e.preventDefault();
+            const url = $("#url-input").val();
+            $.post("/check", { url: url }, function(data) {
+                $("#result").removeClass("hidden");
+                if (data.is_phishing) {
+                    $("#status").text("Warning: The link is not safe!");
+                    $("#status").css("color", "red");
+                } else {
+                    $("#status").text("The link is safe.");
+                    $("#status").css("color", "green");
+                }
+                $("#reasons").empty();
+                data.reasons.forEach(reason => {
+                    $("#reasons").append("<li>" + reason + "</li>");
+                });
+            });
+        });
+    </script>
+</body>
+</html>
